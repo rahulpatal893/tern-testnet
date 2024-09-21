@@ -21,17 +21,17 @@ const CONTRACT_ADDRESS = T3RN_ABI.at(-1).CA_ARBT;
   console.log('');
 
   const options = readlineSync.question(
-    'Choose the network that you want to use 👇\n1. Arbitrum Sepolia to Base Sepolia\n2. Arbitrum Sepolia to Blast Sepolia\n3. Arbitrum Sepolia to Optimism Sepolia\n4. Exit\n\nEnter 1, 2, 3, or 4: '
+    'Choose the network that you want to use \n1. Arbitrum Sepolia to Base Sepolia\n2. Arbitrum Sepolia to Blast Sepolia\n3. Arbitrum Sepolia to Optimism Sepolia\n4. Exit\n\nEnter 1, 2, 3, or 4: '
   );
 
   if (options === '4' || !options) {
-    console.log('👋 Exiting the bot. See you next time!'.cyan);
+    console.log(' Exiting the bot. See you next time!'.cyan);
     console.log('Subscribe: https://t.me/feature_earning.'.green);
     process.exit(0);
   }
 
   const numTx = readlineSync.questionInt(
-    '🔄 How many times you want to swap or bridge? '
+    ' How many times you want to swap or bridge? '
   );
 
   if (numTx <= 0) {
@@ -49,17 +49,12 @@ const CONTRACT_ADDRESS = T3RN_ABI.at(-1).CA_ARBT;
         const balanceInEth = ethers.formatUnits(balance, 'ether');
 
         console.log(
-          `⚙️ [ ${moment().format(
-            'HH:mm:ss'
-          )} ] Doing transactions for address ${wallet.address}...`.yellow
+          `⚙️ [ ${moment().format('HH:mm:ss')} ] Doing transactions for address ${wallet.address}...`.yellow
         );
 
         if (balanceInEth < 0.001) {
           console.log(
-            `❌ [ ${moment().format(
-              'HH:mm:ss'
-            )} ] Your balance is too low (💰 ${balanceInEth} ETH), please claim faucet first!`
-              .red
+            `❌ [ ${moment().format('HH:mm:ss')} ] Your balance is too low ( ${balanceInEth} ETH), please claim faucet first!`.red
           );
           process.exit(0);
         }
@@ -76,12 +71,11 @@ const CONTRACT_ADDRESS = T3RN_ABI.at(-1).CA_ARBT;
               continue;
             }
 
-            const request = transactionData(
-              wallet.address,
-              amount.hex,
-              options
-            );
+            const request = transactionData(wallet.address, amount.hex, options);
             const gasPrice = parseUnits('0.1', 'gwei'); // adjustable
+
+            // Generate a random number between 0.00002 and 0.0001 for the transaction value
+            const randomNumber = generateRandomNumber();
 
             const transaction = {
               data: request,
@@ -89,23 +83,17 @@ const CONTRACT_ADDRESS = T3RN_ABI.at(-1).CA_ARBT;
               gasLimit: 2000000, // adjustable
               gasPrice,
               from: wallet.address,
-              value: parseUnits('0.0001', 'ether'), // adjustable
+              value: parseUnits(randomNumber.toString(), 'ether'), // use the random number
             };
 
             const result = await wallet.sendTransaction(transaction);
             console.log(
-              `✅ [ ${moment().format(
-                'HH:mm:ss'
-              )} ] Transaction successful from Arbitrum Sepolia to ${
+              `✅ [ ${moment().format('HH:mm:ss')} ] Transaction successful from Arbitrum Sepolia to ${
                 options === '1' ? 'Base' : options === '2' ? 'Blast' : 'OP'
               } Sepolia!`.green
             );
             console.log(
-              `🔗 [ ${moment().format(
-                'HH:mm:ss'
-              )} ] Transaction hash: https://sepolia-explorer.arbitrum.io/tx/${
-                result.hash
-              }`.green
+              ` [ <span class="math-inline">\{moment\(\)\.format\('HH\:mm\:ss'\)\} \] Transaction hash\: https\://sepolia\-explorer\.arbitrum\.io/tx/</span>{result.hash}`.green
             );
             console.log('');
 
